@@ -325,6 +325,14 @@ class TfidfSetCanopyPredicate(TfidfSetPredicate, TfidfCanopyPredicate):
 class TfidfNGramCanopyPredicate(TfidfNGramPredicate, TfidfCanopyPredicate):
     type = "TfidfNGramCanopyPredicate"
 
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field)
+        self.use_stop_words = use_stop_words
+
+    def initIndex(self) -> Index:
+        self.reset()
+        return tfidf.TfIdfIndex(use_stop_words=self.use_stop_words)
+
 
 class LevenshteinPredicate(IndexPredicate):
     def initIndex(self) -> Index:

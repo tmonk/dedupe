@@ -102,14 +102,18 @@ class CustomType(FieldType):
             self.name = name
 
 
+
 def indexPredicates(
     predicates: Iterable[type[predicates.IndexPredicate]],
     thresholds: Sequence[float],
     field: str,
+    use_stop_words: bool = True,
 ) -> list[predicates.IndexPredicate]:
     index_predicates = []
     for predicate in predicates:
         for threshold in thresholds:
-            index_predicates.append(predicate(threshold, field))
-
+            if 'use_stop_words' in predicate.__init__.__code__.co_varnames:
+                index_predicates.append(predicate(threshold, field, use_stop_words=use_stop_words))
+            else:
+                index_predicates.append(predicate(threshold, field))
     return index_predicates

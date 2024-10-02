@@ -88,6 +88,25 @@ class StringType(ShortStringType):
         predicates.TfidfTextSearchPredicate,
     ]
 
+    def __init__(
+        self,
+        field: str,
+        name: Optional[str] = None,
+        crf: bool = False,
+        use_stop_words: bool = True,
+        **kwargs
+    ):
+        super().__init__(field, name=name, crf=crf, **kwargs)
+        self.use_stop_words = use_stop_words
+
+        # Update index predicates
+        self.predicates += indexPredicates(
+            self._index_predicates,
+            self._index_thresholds,
+            self.field,
+            use_stop_words=self.use_stop_words
+        )
+
 
 class TextType(BaseStringType):
     type = "Text"
