@@ -128,11 +128,12 @@ class IndexPredicate(Predicate):
     index: Index | None
     _cache: dict[Any, frozenset[str]]
 
-    def __init__(self, threshold: float, field: str):
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
         self.__name__ = f"({threshold}, {field})"
         self.field = field
         self.threshold = threshold
         self.index = None
+        self.use_stop_words = use_stop_words
 
     def __getstate__(self) -> dict[str, Any]:
         odict = self.__dict__.copy()
@@ -276,7 +277,7 @@ class SearchPredicate(IndexPredicate):
 class TfidfPredicate(IndexPredicate):
     def initIndex(self) -> Index:
         self.reset()
-        return tfidf.TfIdfIndex()
+        return tfidf.TfIdfIndex(use_stop_words=self.use_stop_words)
 
 
 class TfidfCanopyPredicate(CanopyPredicate, TfidfPredicate):
@@ -305,25 +306,43 @@ class TfidfNGramPredicate(IndexPredicate):
 class TfidfTextSearchPredicate(TfidfTextPredicate, TfidfSearchPredicate):
     type = "TfidfTextSearchPredicate"
 
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
+
 
 class TfidfSetSearchPredicate(TfidfSetPredicate, TfidfSearchPredicate):
     type = "TfidfSetSearchPredicate"
+
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
 
 
 class TfidfNGramSearchPredicate(TfidfNGramPredicate, TfidfSearchPredicate):
     type = "TfidfNGramSearchPredicate"
 
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
+
 
 class TfidfTextCanopyPredicate(TfidfTextPredicate, TfidfCanopyPredicate):
     type = "TfidfTextCanopyPredicate"
+
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
 
 
 class TfidfSetCanopyPredicate(TfidfSetPredicate, TfidfCanopyPredicate):
     type = "TfidfSetCanopyPredicate"
 
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
+
 
 class TfidfNGramCanopyPredicate(TfidfNGramPredicate, TfidfCanopyPredicate):
     type = "TfidfNGramCanopyPredicate"
+
+    def __init__(self, threshold: float, field: str, use_stop_words: bool = True):
+        super().__init__(threshold, field, use_stop_words=use_stop_words)
 
 
 class LevenshteinPredicate(IndexPredicate):

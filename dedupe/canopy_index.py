@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class CanopyIndex(TextIndex):  # pragma: no cover
-    def __init__(self) -> None:
+    def __init__(self, use_stop_words: bool = True) -> None:
+        self.use_stop_words = use_stop_words
         lexicon = CanopyLexicon()
         self.index = CosineIndex(lexicon)
         self.lexicon = lexicon
@@ -29,9 +30,11 @@ class CanopyIndex(TextIndex):  # pragma: no cover
 
         bucket = self.index.family.IF.Bucket
         for wid, docs in self.index._wordinfo.items():
-            if len(docs) > threshold:
-                stop_words.append(wid)
-                continue
+            if self.use_stop_words:
+                if len(docs) > threshold:
+                    stop_words.append(wid)
+                    continue
+            # No need for an else block; we simply don't remove stop words if use_stop_words is False
 
             if isinstance(docs, dict):
                 docs = bucket(docs)

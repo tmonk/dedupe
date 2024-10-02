@@ -46,6 +46,7 @@ class BaseStringType(FieldType):
             ),
             (1, 2, 3, 4),
             self.field,
+            use_stop_words=self.use_stop_words
         )
 
 
@@ -68,14 +69,14 @@ class ShortStringType(BaseStringType):
     _index_thresholds = (0.2, 0.4, 0.6, 0.8)
 
     def __init__(
-        self, field: str, name: Optional[str] = None, crf: bool = False, **kwargs
+        self, field: str, name: Optional[str] = None, crf: bool = False, use_stop_words: bool = True, **kwargs
     ):
-        super().__init__(field, name=name, **kwargs)
+        super().__init__(field, name=name, use_stop_words=use_stop_words, **kwargs)
 
         if crf:
-            self.comparator = crfEd  # type: ignore[assignment]
+            self.comparator = crfEd
         else:
-            self.comparator = affineGap  # type: ignore[assignment]
+            self.comparator = affineGap
 
 
 class StringType(ShortStringType):
@@ -87,6 +88,16 @@ class StringType(ShortStringType):
         predicates.TfidfTextCanopyPredicate,
         predicates.TfidfTextSearchPredicate,
     ]
+
+    def __init__(
+        self,
+        field: str,
+        name: Optional[str] = None,
+        crf: bool = False,
+        use_stop_words: bool = True,
+        **kwargs
+    ):
+        super().__init__(field, name=name, crf=crf, use_stop_words=use_stop_words, **kwargs)
 
 
 class TextType(BaseStringType):

@@ -12,8 +12,8 @@ Doc = Tuple[str, ...]
 
 
 class TfIdfIndex(Index):
-    def __init__(self) -> None:
-        self._index = CanopyIndex()
+    def __init__(self, use_stop_words: bool = True) -> None:
+        self._index = CanopyIndex(use_stop_words=use_stop_words)
         self._doc_to_id = Enumerator(start=1)
         self._parseTerms = self._index.lexicon.parseTerms
 

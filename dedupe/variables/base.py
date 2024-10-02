@@ -55,26 +55,35 @@ class FieldType(Variable):
     _Predicate: type[predicates.SimplePredicate] = predicates.SimplePredicate
     comparator: Comparator
 
-    def __init__(self, field: str, name: str | None = None, has_missing: bool = False):
+    def __init__(
+        self,
+        field: str,
+        name: Optional[str] = None,
+        has_missing: bool = False,
+        use_stop_words: bool = True,
+        **kwargs
+    ):
+        super().__init__()
         self.field = field
-
         if name is None:
             self.name = f"({self.field}: {self.type})"
         else:
             self.name = name
-
+        self.use_stop_words = use_stop_words
         self.predicates = [
             self._Predicate(pred, self.field) for pred in self._predicate_functions
         ]
-
         self.predicates += indexPredicates(
-            self._index_predicates, self._index_thresholds, self.field
+            self._index_predicates,
+            self._index_thresholds,
+            self.field,
+            use_stop_words=self.use_stop_words
         )
-
         self.has_missing = has_missing
         if self.has_missing:
             exists_pred = predicates.ExistsPredicate(self.field)
             self.predicates.append(exists_pred)
+
 
 
 class CustomType(FieldType):
@@ -101,15 +110,14 @@ class CustomType(FieldType):
         else:
             self.name = name
 
-
 def indexPredicates(
     predicates: Iterable[type[predicates.IndexPredicate]],
     thresholds: Sequence[float],
     field: str,
+    use_stop_words: bool = True,
 ) -> list[predicates.IndexPredicate]:
     index_predicates = []
     for predicate in predicates:
         for threshold in thresholds:
-            index_predicates.append(predicate(threshold, field))
-
+            index_predicates.append(predicate(threshold, field, use_stop_words=use_stop_words))
     return index_predicates
