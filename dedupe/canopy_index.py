@@ -34,7 +34,6 @@ class CanopyIndex(TextIndex):  # pragma: no cover
                 if len(docs) > threshold:
                     stop_words.append(wid)
                     continue
-            # No need for an else block; we simply don't remove stop words if use_stop_words is False
 
             if isinstance(docs, dict):
                 docs = bucket(docs)
